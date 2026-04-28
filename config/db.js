@@ -2,6 +2,7 @@ const { Sequelize } = require('sequelize');
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
+  protocol: 'postgres',
   logging: false,
   dialectOptions: {
     ssl: {
@@ -15,8 +16,8 @@ const connectDB = async () => {
   try {
     await sequelize.authenticate();
     console.log(`✅ PostgreSQL Connected via Supabase`);
-  } catch (error) {
-    console.error(`❌ DB Connection Error: ${error.message}`);
+  } catch (err) {
+    console.error("DB Connection Error:", err);
     process.exit(1);
   }
 };
