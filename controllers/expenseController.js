@@ -78,7 +78,7 @@ const getExpenses = async (req, res, next) => {
     const currentYear = new Date().getFullYear();
     const monthlyData = await Expense.findAll({
       attributes: [
-        [sequelize.fn('MONTH', sequelize.col('date')), '_id'],
+        [sequelize.literal('EXTRACT(MONTH FROM "date")'), '_id'],
         'category',
         [sequelize.fn('SUM', sequelize.col('amount')), 'total'],
         [sequelize.fn('COUNT', sequelize.col('id')), 'count']
@@ -90,8 +90,8 @@ const getExpenses = async (req, res, next) => {
           [Op.between]: [new Date(`${currentYear}-01-01`), new Date(`${currentYear}-12-31 23:59:59`)]
         }
       },
-      group: [sequelize.fn('MONTH', sequelize.col('date')), 'category'],
-      order: [[sequelize.fn('MONTH', sequelize.col('date')), 'ASC']],
+      group: [sequelize.literal('EXTRACT(MONTH FROM "date")'), 'category'],
+      order: [[sequelize.literal('EXTRACT(MONTH FROM "date")'), 'ASC']],
       raw: true
     });
 
