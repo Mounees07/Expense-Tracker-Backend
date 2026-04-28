@@ -175,19 +175,12 @@ const AuthPage = ({ darkMode, toggleDark }) => {
                 {tab === 'login' ? 'Signing in...' : 'Creating account...'}
               </>
             ) : (
-              tab === 'login' ? '🚀 Sign In' : '✨ Create Account'
+              tab === 'login' ? 'Login' : 'Create Account'
             )}
           </button>
         </form>
 
-        {tab === 'login' && (
-          <div style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '12px 16px', marginTop: 16 }}>
-            <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0, lineHeight: 1.6 }}>
-              <strong style={{ color: 'var(--text-secondary)' }}>Demo credentials:</strong><br />
-              Register with any email/password to get started!
-            </p>
-          </div>
-        )}
+       
       </div>
     </div>
   );
