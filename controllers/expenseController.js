@@ -8,7 +8,24 @@ const { sequelize } = require('../config/db');
 // @access  Private
 const getExpenses = async (req, res, next) => {
   try {
-    const { category, search, month, year, page = 1, limit = 10, sortBy = 'date', order = 'desc' } = req.query;
+    const {
+      category,
+      search,
+      notes,
+      month,
+      year,
+      startDate,
+      endDate,
+      minAmount,
+      maxAmount,
+      account,
+      paymentMethod,
+      type,
+      page = 1,
+      limit = 10,
+      sortBy = 'date',
+      order = 'desc',
+    } = req.query;
 
     const where = { userId: req.user.id };
 
@@ -22,8 +39,30 @@ const getExpenses = async (req, res, next) => {
       where.title = { [Op.like]: `%${search}%` };
     }
 
+    if (notes) {
+      where.notes = { [Op.like]: `%${notes}%` };
+    }
+
+    if (type) {
+      where.type = type;
+    }
+
+    if (account || paymentMethod) {
+      where.paymentMethod = account || paymentMethod;
+    }
+
+    if (minAmount || maxAmount) {
+      where.amount = {};
+      if (minAmount) where.amount[Op.gte] = parseFloat(minAmount);
+      if (maxAmount) where.amount[Op.lte] = parseFloat(maxAmount);
+    }
+
     // Month/Year filter
-    if (month && year) {
+    if (startDate || endDate) {
+      const rangeStart = startDate ? new Date(startDate) : new Date(1970, 0, 1);
+      const rangeEnd = endDate ? new Date(`${endDate} 23:59:59`) : new Date();
+      where.date = { [Op.between]: [rangeStart, rangeEnd] };
+    } else if (month && year) {
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 0, 23, 59, 59);
       where.date = { [Op.between]: [startDate, endDate] };
@@ -210,12 +249,18 @@ const deleteExpense = async (req, res, next) => {
 // @access  Private
 const exportCSV = async (req, res, next) => {
   try {
-    const { category, search, month, year } = req.query;
+    const { category, search, month, year, startDate, endDate, type } = req.query;
     const where = { userId: req.user.id };
 
     if (category && category !== 'All') where.category = category;
     if (search) where.title = { [Op.like]: `%${search}%` };
-    if (month && year) {
+    if (type) where.type = type;
+
+    if (startDate || endDate) {
+      const rangeStart = startDate ? new Date(startDate) : new Date(1970, 0, 1);
+      const rangeEnd = endDate ? new Date(`${endDate} 23:59:59`) : new Date();
+      where.date = { [Op.between]: [rangeStart, rangeEnd] };
+    } else if (month && year) {
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 0, 23, 59, 59);
       where.date = { [Op.between]: [startDate, endDate] };

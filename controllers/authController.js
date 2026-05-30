@@ -33,7 +33,7 @@ const register = async (req, res, next) => {
       success: true,
       message: 'Registration successful',
       token,
-      user: { id: user.id, name: user.name, email: user.email },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, themePreference: user.themePreference },
     });
   } catch (error) {
     next(error);
@@ -68,7 +68,7 @@ const login = async (req, res, next) => {
       success: true,
       message: 'Login successful',
       token,
-      user: { id: user.id, name: user.name, email: user.email },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, themePreference: user.themePreference },
     });
   } catch (error) {
     next(error);
@@ -79,7 +79,26 @@ const login = async (req, res, next) => {
 // @route   GET /api/auth/me
 // @access  Private
 const getMe = async (req, res) => {
-  res.json({ success: true, user: { id: req.user.id, name: req.user.name, email: req.user.email } });
+  res.json({ success: true, user: { id: req.user.id, name: req.user.name, email: req.user.email, role: req.user.role, themePreference: req.user.themePreference } });
 };
 
-module.exports = { register, login, getMe };
+const updateTheme = async (req, res, next) => {
+  try {
+    const { themePreference } = req.body;
+    if (!['light', 'dark'].includes(themePreference)) {
+      return res.status(400).json({ success: false, message: 'Invalid theme preference' });
+    }
+
+    req.user.themePreference = themePreference;
+    await req.user.save();
+
+    res.json({
+      success: true,
+      user: { id: req.user.id, name: req.user.name, email: req.user.email, role: req.user.role, themePreference: req.user.themePreference },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { register, login, getMe, updateTheme };

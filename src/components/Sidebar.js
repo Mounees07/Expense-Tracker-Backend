@@ -7,8 +7,8 @@ import {
   FiLogOut,
   FiMenu,
   FiX,
-  FiDollarSign,
 } from 'react-icons/fi';
+import LogoMark from './LogoMark';
 
 const navItems = [
   { id: 'overview', icon: <FiGrid />, label: 'Overview' },
@@ -42,7 +42,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         {/* Logo */}
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon">
-            <FiDollarSign size={20} color="white" />
+            <LogoMark size={28} />
           </div>
           <div>
             <h2>ExpenseTracker</h2>

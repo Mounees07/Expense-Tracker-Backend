@@ -30,6 +30,21 @@ const User = sequelize.define('User', {
       len: [6, 100],
     },
   },
+  role: {
+    type: DataTypes.ENUM('user', 'admin'),
+    allowNull: false,
+    defaultValue: 'user',
+  },
+  themePreference: {
+    type: DataTypes.ENUM('light', 'dark'),
+    allowNull: false,
+    defaultValue: 'light',
+  },
+  emailVerified: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
 }, {
   timestamps: true,
   hooks: {

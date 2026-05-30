@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiDollarSign, FiSun, FiMoon } from 'react-icons/fi';
+import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiSun, FiMoon } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import LogoMark from '../components/LogoMark';
 
 const AuthPage = ({ darkMode, toggleDark }) => {
   const [tab, setTab] = useState('login');
@@ -77,7 +78,7 @@ const AuthPage = ({ darkMode, toggleDark }) => {
         {/* Logo */}
         <div className="auth-logo">
           <div className="auth-logo-icon">
-            <FiDollarSign size={28} color="white" />
+            <LogoMark size={38} />
           </div>
           <h1>ExpenseTracker</h1>
           <p>{tab === 'login' ? 'Sign in to manage your expenses' : 'Create your free account'}</p>

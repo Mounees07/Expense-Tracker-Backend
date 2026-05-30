@@ -6,12 +6,17 @@ import autoTable from 'jspdf-autotable';
 
 const ExpenseContext = createContext(null);
 
+const getCurrentMonthFilters = () => {
+  const now = new Date();
+  return { month: now.getMonth() + 1, year: now.getFullYear() };
+};
+
 export const ExpenseProvider = ({ children }) => {
   const [expenses, setExpenses] = useState([]);
   const [summary, setSummary] = useState({ totalAmount: 0, categoryBreakdown: {}, monthlyData: [], totalCount: 0 });
   const [pagination, setPagination] = useState({ total: 0, page: 1, pages: 1, limit: 10 });
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({ category: 'All', search: '', month: '', year: new Date().getFullYear() });
+  const [filters, setFilters] = useState({ category: 'All', search: '', ...getCurrentMonthFilters() });
 
   const fetchExpenses = useCallback(async (params = {}) => {
     setLoading(true);

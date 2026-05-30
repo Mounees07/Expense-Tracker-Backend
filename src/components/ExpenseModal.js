@@ -9,7 +9,7 @@ const CATEGORIES = [
   'Personal Care', 'Other',
 ];
 
-const PAYMENT_METHODS = ['Cash', 'GPay', 'PhonePe', 'Paytm', 'Credit Card', 'Debit Card', 'Bank Transfer', 'Wallet', 'Other'];
+const PAYMENT_METHODS = ['Cash', 'SBI', 'KVB', 'Wallet'];
 
 const defaultForm = {
   title: '',
@@ -112,7 +112,7 @@ const ExpenseModal = ({ isOpen, onClose, editExpense, onSuccess }) => {
               className={`btn ${form.type === 'income' ? 'btn-success' : ''}`}
               style={{ flex: 1, border: 'none', background: form.type === 'income' ? '#10b981' : 'transparent', color: form.type === 'income' ? 'white' : 'var(--text-secondary)' }}
               onClick={() => {
-                const incomeMethods = ['SBI', 'KVB', 'Wallet', 'Cash'];
+                const incomeMethods = ['Cash', 'SBI', 'KVB', 'Wallet'];
                 setForm(f => ({ 
                   ...f, 
                   type: 'income', 

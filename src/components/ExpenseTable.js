@@ -25,6 +25,26 @@ const formatAmount = (n) =>
 const formatDate = (d) =>
   new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
+const createMonthOptions = () => {
+  const formatter = new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' });
+  const now = new Date();
+
+  return Array.from({ length: 12 }, (_, index) => {
+    const date = new Date(now.getFullYear(), now.getMonth() - index, 1);
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    return {
+      label: formatter.format(date),
+      value: `${year}-${month}`,
+      month,
+      year,
+    };
+  });
+};
+
+const MONTH_OPTIONS = createMonthOptions();
+
 const ExpenseTable = () => {
   const { expenses, pagination, loading, filters, setFilters, fetchExpenses, deleteExpense } = useExpenses();
   const [modalOpen, setModalOpen] = useState(false);
@@ -56,6 +76,14 @@ const ExpenseTable = () => {
     setCurrentPage(1);
   };
 
+  const handleMonthFilter = (value) => {
+    const selected = MONTH_OPTIONS.find((option) => option.value === value);
+    if (!selected) return;
+
+    setFilters((f) => ({ ...f, month: selected.month, year: selected.year }));
+    setCurrentPage(1);
+  };
+
   const handleDelete = async (id) => {
     try {
       await deleteExpense(id);
@@ -79,6 +107,8 @@ const ExpenseTable = () => {
   const onSuccess = () => { doFetch({ page: 1 }); setCurrentPage(1); };
 
   const pages = Array.from({ length: pagination.pages }, (_, i) => i + 1);
+  const selectedMonthValue = `${filters.year}-${filters.month}`;
+  const selectedMonthLabel = MONTH_OPTIONS.find((option) => option.value === selectedMonthValue)?.label || 'Selected month';
 
   return (
     <div>
@@ -117,13 +147,12 @@ const ExpenseTable = () => {
             <select
               id="month-filter"
               className="form-control"
-              style={{ width: 'auto', minWidth: '130px', cursor: 'pointer', fontSize: '13px' }}
-              value={filters.month || ''}
-              onChange={(e) => { setFilters((f) => ({ ...f, month: e.target.value })); setCurrentPage(1); }}
+              style={{ width: 'auto', minWidth: '150px', cursor: 'pointer', fontSize: '13px' }}
+              value={selectedMonthValue}
+              onChange={(e) => handleMonthFilter(e.target.value)}
             >
-              <option value="">All Months</option>
-              {['January','February','March','April','May','June','July','August','September','October','November','December'].map((m, i) => (
-                <option key={m} value={i + 1}>{m}</option>
+              {MONTH_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
 
@@ -143,7 +172,7 @@ const ExpenseTable = () => {
         <div className="card-header">
           <div>
             <h3 className="card-title">All Expenses</h3>
-            <p className="card-subtitle">{pagination.total} total record{pagination.total !== 1 ? 's' : ''}</p>
+            <p className="card-subtitle">{selectedMonthLabel} - {pagination.total} record{pagination.total !== 1 ? 's' : ''}</p>
           </div>
         </div>
 
