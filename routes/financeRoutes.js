@@ -9,6 +9,9 @@ const {
   getInsights,
   getMonthlyExpenseTarget,
   setMonthlyExpenseTarget,
+  getBudgetSummary,
+  getRecurringSuggestions,
+  getCashFlowForecast,
 } = require('../controllers/financeController');
 
 const router = express.Router();
@@ -34,6 +37,9 @@ router.get('/', (req, res) => {
 router.get('/insights', getInsights);
 router.get('/budget-target/monthly', getMonthlyExpenseTarget);
 router.put('/budget-target/monthly', setMonthlyExpenseTarget);
+router.get('/budgets/summary', getBudgetSummary);
+router.get('/recurring/suggestions', getRecurringSuggestions);
+router.get('/forecast', getCashFlowForecast);
 router.get('/:resource', validateResource, listResource);
 router.post('/:resource', validateResource, body().isObject(), createResource);
 router.put('/:resource/:id', validateResource, body().isObject(), updateResource);

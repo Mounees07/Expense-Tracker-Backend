@@ -45,6 +45,23 @@ const User = sequelize.define('User', {
     allowNull: false,
     defaultValue: false,
   },
+  resetPasswordToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  resetPasswordExpires: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  statementSchedule: {
+    type: DataTypes.ENUM('off', 'daily', 'weekly', 'monthly'),
+    allowNull: false,
+    defaultValue: 'off',
+  },
+  lastStatementSentAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
 }, {
   timestamps: true,
   hooks: {

@@ -69,6 +69,10 @@ const Expense = sequelize.define('Expense', {
     type: DataTypes.STRING(300),
     allowNull: true,
   },
+  transferGroupId: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 }, {
   timestamps: true,
   indexes: [

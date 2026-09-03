@@ -39,6 +39,11 @@ const Budget = sequelize.define('Budget', {
     defaultValue: 80,
     validate: { min: 1, max: 100 },
   },
+  rolloverEnabled: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
 }, {
   timestamps: true,
   indexes: [{ fields: ['userId', 'month', 'year'] }],
