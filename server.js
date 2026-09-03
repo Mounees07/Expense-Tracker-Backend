@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -85,21 +86,27 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
+app.get('/', (req, res) => {
+  res.json({ success: true, message: 'Expense Tracker API', docs: '/api' });
+});
 
-  app.get('*', (req, res) => {
-    if (!req.originalUrl.startsWith('/api')) {
-      res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
-    } else {
-      res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` });
-    }
-  });
-} else {
-  app.use('*', (req, res) => {
-    res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` });
+// Only serve the SPA build if it is actually bundled with this deploy. On the
+// API-only host (Render) the frontend lives elsewhere (Vercel), so this stays
+// off and res.sendFile on a missing index.html can't 500 the root route.
+const spaBuildDir = path.join(__dirname, '../frontend/build');
+const spaIndexHtml = path.join(spaBuildDir, 'index.html');
+
+if (fs.existsSync(spaIndexHtml)) {
+  app.use(express.static(spaBuildDir));
+  app.get('*', (req, res, next) => {
+    if (req.originalUrl.startsWith('/api')) return next();
+    res.sendFile(spaIndexHtml);
   });
 }
+
+app.use('*', (req, res) => {
+  res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` });
+});
 
 app.use(errorHandler);
 
