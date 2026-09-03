@@ -95,8 +95,13 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-const syncOptions = process.env.NODE_ENV === 'production' ? {} : { alter: true };
-if (process.env.NODE_ENV === 'production') {
+// In production we don't auto-alter the schema on every boot. Set
+// SEQUELIZE_ALTER=true for a single deploy to add newly-introduced columns
+// to an existing database, then remove it (proper migrations are the
+// long-term answer).
+const shouldAlter = process.env.NODE_ENV !== 'production' || process.env.SEQUELIZE_ALTER === 'true';
+const syncOptions = shouldAlter ? { alter: true } : {};
+if (process.env.NODE_ENV === 'production' && !shouldAlter) {
   console.warn('Running sequelize.sync() without alter in production. Use migrations for schema changes.');
 }
 
