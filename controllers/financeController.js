@@ -356,6 +356,14 @@ const getMonthlyExpenseTarget = async (req, res, next) => {
     const remaining = Math.max(target - spent, 0);
     const utilization = target > 0 ? Math.round((spent / target) * 100) : 0;
 
+    // Per-category spend for this month only, so consumers don't have to fall
+    // back to an all-time breakdown.
+    const categoryBreakdown = transactions.reduce((acc, item) => {
+      const key = item.category || 'Other';
+      acc[key] = (acc[key] || 0) + parseFloat(item.amount);
+      return acc;
+    }, {});
+
     res.json({
       success: true,
       data: {
@@ -367,6 +375,7 @@ const getMonthlyExpenseTarget = async (req, res, next) => {
         remaining,
         utilization,
         exceeded: target > 0 && spent > target,
+        categoryBreakdown,
       },
     });
   } catch (error) {
