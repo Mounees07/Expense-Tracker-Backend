@@ -17,18 +17,28 @@ connectDB();
 
 const app = express();
 
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000')
+// ALLOWED_ORIGINS is a comma-separated list of frontend origins that may call
+// the API. Entries may contain "*" as a wildcard, e.g.
+//   https://myapp.vercel.app,https://*.vercel.app,http://localhost:3000
+// which covers the production alias plus every Vercel preview deployment.
+const originPatterns = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000')
   .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+  .map((o) => o.trim())
+  .filter(Boolean)
+  .map((o) => new RegExp('^' + o.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*') + '$'));
+
+const isOriginAllowed = (origin) => originPatterns.some((re) => re.test(origin));
 
 app.use(helmet());
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // No Origin header => same-origin / curl / server-to-server; allow it.
+    if (!origin || isOriginAllowed(origin)) {
       return callback(null, true);
     }
-    return callback(new Error('Not allowed by CORS'));
+    // Reject without throwing: the ACAO header is simply omitted and the
+    // browser blocks the response, no 500 noise in the logs.
+    return callback(null, false);
   },
   credentials: true,
 }));
